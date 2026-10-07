@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Print from 'expo-print';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { t, getLocaleTag } from '../i18n';
 
 export interface ScanDocument {
   id: string;
@@ -77,12 +78,15 @@ export async function getDocument(id: string) {
 }
 
 export function defaultDocName(date = new Date()) {
-  const d = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
-  const t = date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
-  return `Scan ${d} ${t}`;
+  const loc = getLocaleTag();
+  const d = date.toLocaleDateString(loc, { month: 'short', day: 'numeric', year: 'numeric' });
+  const time = date.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+  return t('defaultDocName', { date: `${d} ${time}` });
 }
 
-const safeFileName = (name: string) => name.replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '_') || 'Scan';
+// Strip only characters that are unsafe in file names, so non-Latin names (हिन्दी, 中文…) survive.
+const safeFileName = (name: string) =>
+  name.replace(/[\\/:*?"<>|#%&{}$!'@+`=]+/g, '').trim().replace(/\s+/g, '_').slice(0, 80) || 'Scan';
 
 async function toDataUri(uri: string, width: number) {
   const probe = await ImageManipulator.manipulate(uri).renderAsync();
@@ -186,11 +190,11 @@ export function formatBytes(n: number) {
 export function formatRelative(iso: string) {
   const diff = Date.now() - new Date(iso).getTime();
   const min = Math.floor(diff / 60_000);
-  if (min < 1) return 'Just now';
-  if (min < 60) return `${min} min ago`;
+  if (min < 1) return t('justNow');
+  if (min < 60) return t('minAgo', { n: min });
   const h = Math.floor(min / 60);
-  if (h < 24) return `${h} h ago`;
+  if (h < 24) return t('hAgo', { n: h });
   const d = Math.floor(h / 24);
-  if (d < 7) return d === 1 ? 'Yesterday' : `${d} days ago`;
-  return new Date(iso).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+  if (d < 7) return d === 1 ? t('yesterday') : t('daysAgo', { n: d });
+  return new Date(iso).toLocaleDateString(getLocaleTag(), { month: 'short', day: 'numeric', year: 'numeric' });
 }

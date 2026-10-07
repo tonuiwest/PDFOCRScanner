@@ -1,14 +1,18 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import {
-  View, Text, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput, Animated,
+  View, Text, Pressable, StyleSheet, ActivityIndicator, Modal, TextInput, Animated, I18nManager,
   ViewStyle, StyleProp, KeyboardAvoidingView, Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../context/ThemeContext';
+import { t } from '../i18n';
 
 type IconName = keyof typeof Ionicons.glyphMap;
+
+/** Mirrors directional icons (back/forward chevrons, arrows) in right-to-left languages. */
+export const rtlFlip = I18nManager.isRTL ? { transform: [{ scaleX: -1 }] } : undefined;
 
 export function Header({ title, subtitle, onBack, right }: {
   title: string; subtitle?: string; onBack?: () => void; right?: React.ReactNode;
@@ -17,7 +21,7 @@ export function Header({ title, subtitle, onBack, right }: {
   const c = theme.colors;
   return (
     <View style={styles.header}>
-      {onBack && <IconButton icon="chevron-back" onPress={onBack} accessibilityLabel="Back" />}
+      {onBack && <IconButton icon="chevron-back" onPress={onBack} accessibilityLabel={t('back')} />}
       <View style={{ flex: 1, marginLeft: onBack ? 4 : 0 }}>
         <Text numberOfLines={1} style={[styles.headerTitle, { color: c.textPrimary }]}>{title}</Text>
         {!!subtitle && <Text numberOfLines={1} style={[styles.headerSub, { color: c.textMuted }]}>{subtitle}</Text>}
@@ -43,7 +47,7 @@ export function IconButton({ icon, onPress, color, filled, accessibilityLabel, s
         pressed && { opacity: 0.6 },
       ]}
     >
-      <Ionicons name={icon} size={size} color={color ?? theme.colors.textPrimary} />
+      <Ionicons name={icon} size={size} color={color ?? theme.colors.textPrimary} style={/^(chevron|arrow)-(back|forward)/.test(icon) ? rtlFlip : undefined} />
     </Pressable>
   );
 }
@@ -137,7 +141,7 @@ export function ActionSheet({ visible, title, actions, onClose }: {
   );
 }
 
-export function PromptModal({ visible, title, initialValue, confirmLabel = 'Save', onSubmit, onClose }: {
+export function PromptModal({ visible, title, initialValue, confirmLabel, onSubmit, onClose }: {
   visible: boolean; title: string; initialValue: string; confirmLabel?: string;
   onSubmit: (value: string) => void; onClose: () => void;
 }) {
@@ -163,8 +167,8 @@ export function PromptModal({ visible, title, initialValue, confirmLabel = 'Save
             style={[styles.input, { color: c.textPrimary, backgroundColor: c.surfaceAlt, borderColor: c.border }]}
           />
           <View style={{ flexDirection: 'row', gap: 10, marginTop: 18 }}>
-            <Button title="Cancel" variant="secondary" onPress={onClose} style={{ flex: 1 }} />
-            <Button title={confirmLabel} onPress={submit} disabled={!value.trim()} style={{ flex: 1 }} />
+            <Button title={t('cancel')} variant="secondary" onPress={onClose} style={{ flex: 1 }} />
+            <Button title={confirmLabel ?? t('save')} onPress={submit} disabled={!value.trim()} style={{ flex: 1 }} />
           </View>
         </View>
       </KeyboardAvoidingView>

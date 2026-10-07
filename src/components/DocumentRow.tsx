@@ -2,12 +2,13 @@ import React from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../context/ThemeContext';
+import { t } from '../i18n';
 import { ScanDocument, formatBytes, formatRelative } from '../services/documents';
 
 export function DocumentRow({ doc, onPress, onMore }: { doc: ScanDocument; onPress: () => void; onMore: () => void }) {
   const { theme } = useTheme();
   const c = theme.colors;
-  const meta = [formatRelative(doc.createdAt), doc.pages ? `${doc.pages} ${doc.pages === 1 ? 'page' : 'pages'}` : null, formatBytes(doc.size)]
+  const meta = [formatRelative(doc.createdAt), doc.pages ? (doc.pages === 1 ? t('page1') : t('pagesN', { n: doc.pages })) : null, formatBytes(doc.size)]
     .filter(Boolean).join(' · ');
   return (
     <Pressable
@@ -26,11 +27,11 @@ export function DocumentRow({ doc, onPress, onMore }: { doc: ScanDocument; onPre
         {!!doc.ocrText && (
           <View style={[styles.tag, { backgroundColor: c.successSoft }]}>
             <Ionicons name="text" size={11} color={c.success} />
-            <Text style={[styles.tagText, { color: c.success }]}>Text</Text>
+            <Text style={[styles.tagText, { color: c.success }]}>{t('text')}</Text>
           </View>
         )}
       </View>
-      <Pressable onPress={onMore} hitSlop={10} accessibilityLabel={`More options for ${doc.name}`} style={styles.more}>
+      <Pressable onPress={onMore} hitSlop={10} accessibilityLabel={t('moreOptions', { name: doc.name })} style={styles.more}>
         <Ionicons name="ellipsis-vertical" size={18} color={c.textMuted} />
       </Pressable>
     </Pressable>

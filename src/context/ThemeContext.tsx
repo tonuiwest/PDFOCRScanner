@@ -1,6 +1,7 @@
 import React, { createContext, useState, useMemo, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useColorScheme } from 'react-native';
+import { initI18n } from '../i18n';
 
 export interface ThemeColors {
   background: string; surface: string; surfaceAlt: string;
@@ -12,15 +13,15 @@ export interface ThemeColors {
 export interface Theme { colors: ThemeColors; isDark: boolean; }
 export type ThemeMode = 'light' | 'dark' | 'system';
 
-/** Accent colour presets: [light primary, light soft, dark primary, dark soft]. */
+/** Accent colour presets. label is an i18n key; light/dark are [primary, primarySoft]. */
 export const ACCENTS = {
-  blue: { label: 'Ocean', swatch: '#3D5AFE', light: ['#3D5AFE', '#E8ECFF'], dark: ['#7088FF', '#1F2747'] },
-  violet: { label: 'Violet', swatch: '#7C3AED', light: ['#7C3AED', '#F1E9FF'], dark: ['#A47BFF', '#2A1F45'] },
-  teal: { label: 'Teal', swatch: '#0D9488', light: ['#0D9488', '#DDF5F2'], dark: ['#2CC7B8', '#123230'] },
-  green: { label: 'Forest', swatch: '#16A34A', light: ['#15803D', '#E2F6E8'], dark: ['#4ADE80', '#15301F'] },
-  orange: { label: 'Sunset', swatch: '#EA580C', light: ['#E2530A', '#FFEDE2'], dark: ['#FF8A4C', '#3A2213'] },
-  rose: { label: 'Rose', swatch: '#E11D48', light: ['#DB1D47', '#FFE6EC'], dark: ['#FF6B8B', '#3A1622'] },
-  slate: { label: 'Graphite', swatch: '#334155', light: ['#334155', '#E6EAF0'], dark: ['#A5B4C8', '#232B38'] },
+  blue: { label: 'accentOcean', swatch: '#3D5AFE', light: ['#3D5AFE', '#E8ECFF'], dark: ['#7088FF', '#1F2747'] },
+  violet: { label: 'accentViolet', swatch: '#7C3AED', light: ['#7C3AED', '#F1E9FF'], dark: ['#A47BFF', '#2A1F45'] },
+  teal: { label: 'accentTeal', swatch: '#0D9488', light: ['#0D9488', '#DDF5F2'], dark: ['#2CC7B8', '#123230'] },
+  green: { label: 'accentForest', swatch: '#16A34A', light: ['#15803D', '#E2F6E8'], dark: ['#4ADE80', '#15301F'] },
+  orange: { label: 'accentSunset', swatch: '#EA580C', light: ['#E2530A', '#FFEDE2'], dark: ['#FF8A4C', '#3A2213'] },
+  rose: { label: 'accentRose', swatch: '#E11D48', light: ['#DB1D47', '#FFE6EC'], dark: ['#FF6B8B', '#3A1622'] },
+  slate: { label: 'accentGraphite', swatch: '#334155', light: ['#334155', '#E6EAF0'], dark: ['#A5B4C8', '#232B38'] },
 } as const;
 export type AccentKey = keyof typeof ACCENTS;
 
@@ -54,8 +55,8 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    AsyncStorage.multiGet(['theme', 'accent'])
-      .then(([[, t], [, a]]) => {
+    Promise.all([AsyncStorage.multiGet(['theme', 'accent']), initI18n()])
+      .then(([[[, t], [, a]]]) => {
         if (t === 'dark' || t === 'light' || t === 'system') setMode(t);
         if (a && a in ACCENTS) setAccentState(a as AccentKey);
       })

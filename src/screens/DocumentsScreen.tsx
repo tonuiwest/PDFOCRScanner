@@ -10,9 +10,10 @@ import { openDocument, useDocumentActions, useDocuments } from '../hooks/useDocu
 import { scanPages } from '../services/capture';
 import { ScanDocument } from '../services/documents';
 import type { ScreenProps } from '../navigation';
+import { t } from '../i18n';
 
 type Sort = 'newest' | 'oldest' | 'name';
-const SORT_LABEL: Record<Sort, string> = { newest: 'Newest', oldest: 'Oldest', name: 'Name' };
+const SORT_LABEL = { newest: 'sortNewest', oldest: 'sortOldest', name: 'sortName' } as const;
 const NEXT_SORT: Record<Sort, Sort> = { newest: 'oldest', oldest: 'name', name: 'newest' };
 const AD_AFTER = 3;
 
@@ -48,18 +49,18 @@ export default function DocumentsScreen({ navigation }: ScreenProps<'Documents'>
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.background }} edges={['top']}>
       <Header
-        title="Documents"
-        subtitle={docs ? `${docs.length} ${docs.length === 1 ? 'file' : 'files'}` : undefined}
+        title={t('documents')}
+        subtitle={docs ? (docs.length === 1 ? t('file1') : t('filesN', { n: docs.length })) : undefined}
         onBack={() => navigation.goBack()}
-        right={<IconButton icon="scan-outline" onPress={scan} accessibilityLabel="Scan new document" />}
+        right={<IconButton icon="scan-outline" onPress={scan} accessibilityLabel={t('scanNewDocument')} />}
       />
 
       {empty ? (
         <EmptyState
           icon="folder-open-outline"
-          title="No documents yet"
-          text="Scan paper documents or convert photos into clean, shareable PDFs."
-          action={<Button title="Scan a document" icon="scan" onPress={scan} />}
+          title={t('noDocsTitle')}
+          text={t('noDocsBody')}
+          action={<Button title={t('scanADocument')} icon="scan" onPress={scan} />}
         />
       ) : (
         <>
@@ -69,7 +70,7 @@ export default function DocumentsScreen({ navigation }: ScreenProps<'Documents'>
               <TextInput
                 value={query}
                 onChangeText={setQuery}
-                placeholder="Search names and text"
+                placeholder={t('searchPlaceholder')}
                 placeholderTextColor={c.textMuted}
                 style={[styles.input, { color: c.textPrimary }]}
                 returnKeyType="search"
@@ -82,10 +83,10 @@ export default function DocumentsScreen({ navigation }: ScreenProps<'Documents'>
             <Pressable
               onPress={() => setSort(NEXT_SORT[sort])}
               style={[styles.sort, { backgroundColor: c.surface, borderColor: c.border }]}
-              accessibilityLabel={`Sort by ${SORT_LABEL[sort]}`}
+              accessibilityLabel={t('sortBy', { s: t(SORT_LABEL[sort]) })}
             >
               <Ionicons name="swap-vertical" size={16} color={c.textSecondary} />
-              <Text style={[styles.sortText, { color: c.textSecondary }]}>{SORT_LABEL[sort]}</Text>
+              <Text style={[styles.sortText, { color: c.textSecondary }]}>{t(SORT_LABEL[sort])}</Text>
             </Pressable>
           </View>
 
@@ -98,7 +99,7 @@ export default function DocumentsScreen({ navigation }: ScreenProps<'Documents'>
               ? <NativeAdCard />
               : <DocumentRow doc={item.doc} onPress={() => openDocument(item.doc)} onMore={() => showOptions(item.doc)} />}
             ListEmptyComponent={docs ? (
-              <Text style={[styles.noMatch, { color: c.textMuted }]}>No documents match "{query}"</Text>
+              <Text style={[styles.noMatch, { color: c.textMuted }]}>{t('noMatch', { q: query })}</Text>
             ) : null}
           />
         </>

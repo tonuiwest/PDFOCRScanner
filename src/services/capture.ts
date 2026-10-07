@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import * as Haptics from 'expo-haptics';
 import DocumentScanner, { ResponseType, ScanDocumentResponseStatus } from 'react-native-document-scanner-plugin';
 import { adsManager } from './adsManager';
+import { t } from '../i18n';
 
 const MAX_PAGES = 30;
 
@@ -23,7 +24,7 @@ export async function scanPages(max = MAX_PAGES): Promise<string[]> {
     return valid(res.scannedImages);
   } catch (e: any) {
     const msg = String(e?.message ?? '');
-    if (!/cancel/i.test(msg)) Alert.alert('Scanner unavailable', msg || 'Could not start the document scanner.');
+    if (!/cancel/i.test(msg)) Alert.alert(t('scannerUnavailable'), msg || t('scannerStartFailed'));
     return [];
   } finally {
     adsManager.releaseAppOpen();
@@ -44,7 +45,7 @@ export async function pickImages(multiple = true): Promise<string[]> {
     if (res.canceled) return [];
     return valid(res.assets?.map((a) => a.uri));
   } catch (e: any) {
-    Alert.alert('Could not open photos', e?.message ?? 'Unknown error');
+    Alert.alert(t('photosFailed'), e?.message ?? t('unknownError'));
     return [];
   } finally {
     adsManager.releaseAppOpen();

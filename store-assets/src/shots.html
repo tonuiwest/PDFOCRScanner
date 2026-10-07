@@ -16,9 +16,9 @@
   .caption .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; background: rgba(255,255,255,.18); padding: 12px 26px; border-radius: 40px; }
   .caption h1 { font-size: 92px; line-height: 1.04; font-weight: 900; letter-spacing: -2.5px; margin-top: 34px; }
   .caption p { font-size: 38px; line-height: 1.35; font-weight: 500; opacity: .9; margin-top: 26px; }
-  .phone { position: absolute; left: 50%; bottom: -60px; transform: translateX(-50%); width: 820px; height: 1260px; border-radius: 96px; background: #0c0f17; padding: 22px; box-shadow: 0 60px 120px rgba(0,0,0,.45), inset 0 0 0 3px #2a3040; z-index: 2; }
+  .phone { position: absolute; left: 50%; bottom: -60px; transform: translateX(-50%); width: 820px; height: 1380px; border-radius: 96px; background: #0c0f17; padding: 22px; box-shadow: 0 60px 120px rgba(0,0,0,.45), inset 0 0 0 3px #2a3040; z-index: 2; }
   .screen { width: 100%; height: 100%; border-radius: 76px; overflow: hidden; position: relative; }
-  .screen-inner { width: 388px; height: 640px; zoom: 2; position: relative; display: flex; flex-direction: column; }
+  .screen-inner { width: 388px; height: 668px; zoom: 2; position: relative; display: flex; flex-direction: column; }
   .notch { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 90px; height: 24px; border-radius: 14px; background: #0c0f17; z-index: 9; }
   .status { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 6px 26px 0; font-size: 13px; font-weight: 700; }
 
@@ -138,7 +138,7 @@ const scanGraphic = (scale=1) => `
     </div>
   </div>`;
 const status = `<div class="status"><span>9:41</span><span>${I('signal_cellular_alt','font-size:15px')} ${I('wifi','font-size:15px')} ${I('battery_full','font-size:15px')}</span></div>`;
-const banner = `<div class="banner"><b>Ad</b> Banner</div>`;
+const banner = ``;
 const thumb = (ws) => `<div class="thumb">${lines(ws)}<div class="pdf">PDF</div></div>`;
 const docRow = (name, meta, text) => `
   <div class="row">${thumb([80,95,70,90,60,85])}
@@ -194,7 +194,6 @@ function documents() {
       ${docRow('Invoice #2041','2 h ago · 1 page · 310 KB',true)}
       ${docRow('Invoice #2037','3 days ago · 2 pages · 540 KB',true)}
       ${docRow('Supplier Invoice – March','Mar 14, 2026 · 1 page · 280 KB',true)}
-      <div class="native"><div class="ai"></div><div style="flex:1"><div style="font-size:12.5px;font-weight:700"><span style="background:#FFF3DF;color:#C77700;font-size:9px;padding:1px 4px;border-radius:3px;margin-right:4px">Ad</span>Sponsored app</div><div style="font-size:10.5px;color:var(--m);margin-top:2px">Native ad placement</div></div><span style="background:var(--ps);color:var(--p);font-size:11px;font-weight:700;padding:7px 10px;border-radius:9px">Install</span></div>
       ${docRow('Invoice Template','Feb 2, 2026 · 1 page · 190 KB',false)}
     </div>${banner}</div>`;
 }
@@ -244,6 +243,24 @@ const SHOTS = {
   6: { bg: 'linear-gradient(160deg,#1F2937,#0B0E16)', kicker: ['dark_mode','Dark mode'], h: 'Easy on the eyes,<br>day or night', p: 'Share PDFs to email, WhatsApp, Drive & more', screen: () => home(true, '#7088FF') },
 };
 
+// Translated captions per screenshot: [kicker, headline, subline]. Missing languages fall back to English.
+const lang = new URLSearchParams(location.search).get('lang') || 'en';
+const CAPTIONS = {
+  es: [['Escanear','Escanea documentos<br>en segundos','Detección de bordes, recorte y PDF de varias páginas'],['Editar','Cada página,<br>perfecta','Gira, reordena, elimina y exporta en HD'],['OCR','Copia texto de<br>cualquier documento','Reconocimiento de texto rápido y privado'],['Organizar','Encuentra cualquier<br>archivo al instante','Busca por nombre y por el texto de tus PDF'],['Personalizar','Hazla<br>tuya','Modo oscuro y 7 colores de acento'],['Modo oscuro','Cómoda de día<br>y de noche','Comparte PDF por correo, WhatsApp, Drive y más']],
+  pt: [['Digitalizar','Digitalize documentos<br>em segundos','Detecção de bordas, corte e PDF com várias páginas'],['Editar','Cada página<br>perfeita','Gire, reordene, exclua e exporte em HD'],['OCR','Copie texto de<br>qualquer documento','Reconhecimento de texto rápido e privado'],['Organizar','Encontre qualquer<br>arquivo na hora','Pesquise nomes e textos dentro dos seus PDFs'],['Personalizar','Do seu<br>jeito','Modo escuro e 7 cores de destaque'],['Modo escuro','Confortável de dia<br>e de noite','Compartilhe PDFs por e-mail, WhatsApp, Drive e mais']],
+  fr: [['Scanner','Scannez vos documents<br>en quelques secondes','Détection des bords, recadrage et PDF multipage'],['Éditer','Chaque page,<br>parfaite','Pivotez, réorganisez, supprimez et exportez en HD'],['OCR','Copiez le texte de<br>tout document','Reconnaissance de texte rapide et privée'],['Organiser','Retrouvez vos fichiers<br>instantanément','Recherchez noms et texte dans vos PDF'],['Personnaliser','À votre<br>image','Mode sombre et 7 couleurs d’accent'],['Mode sombre','Agréable de jour<br>comme de nuit','Partagez vos PDF par e-mail, WhatsApp, Drive…']],
+  de: [['Scannen','Dokumente in<br>Sekunden scannen','Kantenerkennung, Zuschnitt und mehrseitige PDFs'],['Bearbeiten','Jede Seite<br>perfekt','Drehen, sortieren, löschen und in HD exportieren'],['OCR','Text aus jedem<br>Dokument kopieren','Schnelle, private Texterkennung auf dem Gerät'],['Ordnen','Jede Datei<br>sofort finden','Suche in Namen und Text deiner PDFs'],['Anpassen','Ganz nach<br>deinem Stil','Dunkelmodus und 7 Akzentfarben'],['Dunkelmodus','Angenehm bei<br>Tag und Nacht','PDFs per E-Mail, WhatsApp, Drive & mehr teilen']],
+  ru: [['Скан','Сканируйте документы<br>за секунды','Автоопределение краёв, обрезка и многостраничный PDF'],['Редактор','Каждая страница<br>идеальна','Поворот, порядок, удаление и экспорт в HD'],['OCR','Копируйте текст<br>с любых документов','Быстрое и приватное распознавание текста'],['Порядок','Найдите любой<br>файл мгновенно','Поиск по названию и тексту внутри PDF'],['Стиль','Сделайте<br>своим','Тёмная тема и 7 цветов акцента'],['Тёмная тема','Удобно днём<br>и ночью','Отправляйте PDF по почте, в Telegram, WhatsApp']],
+  tr: [['Tara','Belgeleri saniyeler<br>içinde tarayın','Kenar algılama, kırpma ve çok sayfalı PDF'],['Düzenle','Her sayfa<br>kusursuz','Döndürün, sıralayın, silin ve HD dışa aktarın'],['OCR','Her belgeden<br>metin kopyalayın','Hızlı ve gizli cihaz içi metin tanıma'],['Düzenle','Her dosyayı<br>anında bulun','PDF’lerinizde ad ve metin arayın'],['Kişiselleştir','Size<br>özel','Koyu mod ve 7 vurgu rengi'],['Koyu mod','Gece gündüz<br>göz yormaz','PDF’leri e-posta, WhatsApp, Drive ile paylaşın']],
+  ar: [['مسح','امسح المستندات<br>في ثوانٍ','كشف الحواف والقص وملفات PDF متعددة الصفحات'],['تعديل','كل صفحة<br>مثالية','دوّر ورتّب واحذف وصدّر بجودة HD'],['OCR','انسخ النص من<br>أي مستند','تعرّف سريع وخاص على النص على جهازك'],['تنظيم','اعثر على أي<br>ملف فورًا','ابحث في الأسماء والنص داخل ملفاتك'],['تخصيص','اجعله<br>على ذوقك','الوضع الداكن و7 ألوان مميزة'],['الوضع الداكن','مريح للعين<br>ليلًا ونهارًا','شارك ملفات PDF عبر البريد وواتساب وDrive']],
+  hi: [['स्कैन','सेकंडों में<br>दस्तावेज़ स्कैन करें','ऑटो एज डिटेक्शन, क्रॉप और कई पेज वाली PDF'],['एडिट','हर पेज<br>परफ़ेक्ट','घुमाएं, क्रम बदलें, हटाएं और HD में एक्सपोर्ट करें'],['OCR','किसी भी दस्तावेज़ से<br>टेक्स्ट कॉपी करें','हिन्दी सहित तेज़ और निजी टेक्स्ट पहचान'],['व्यवस्थित','हर फ़ाइल<br>तुरंत खोजें','PDF के नाम और अंदर के टेक्स्ट से खोजें'],['पर्सनलाइज़','अपने<br>अंदाज़ में','डार्क मोड और 7 रंग थीम'],['डार्क मोड','दिन हो या रात,<br>आंखों को आराम','ईमेल, WhatsApp, Drive पर PDF शेयर करें']],
+  id: [['Pindai','Pindai dokumen<br>dalam hitungan detik','Deteksi tepi, potong otomatis, dan PDF banyak halaman'],['Edit','Setiap halaman<br>sempurna','Putar, urutkan, hapus, dan ekspor HD'],['OCR','Salin teks dari<br>dokumen apa pun','Pengenalan teks cepat dan pribadi'],['Atur','Temukan file<br>dalam sekejap','Cari nama dan teks di dalam PDF Anda'],['Personalisasi','Sesuai<br>gaya Anda','Mode gelap dan 7 warna aksen'],['Mode gelap','Nyaman siang<br>dan malam','Bagikan PDF lewat email, WhatsApp, Drive']],
+  vi: [['Quét','Quét tài liệu<br>trong vài giây','Nhận diện cạnh, tự cắt và PDF nhiều trang'],['Chỉnh sửa','Trang nào<br>cũng hoàn hảo','Xoay, sắp xếp, xóa và xuất HD'],['OCR','Sao chép chữ từ<br>mọi tài liệu','Nhận dạng văn bản nhanh, riêng tư'],['Sắp xếp','Tìm mọi tệp<br>ngay lập tức','Tìm theo tên và nội dung trong PDF'],['Cá nhân hóa','Theo phong cách<br>của bạn','Chế độ tối và 7 màu nhấn'],['Chế độ tối','Dịu mắt<br>ngày và đêm','Chia sẻ PDF qua email, Zalo, Drive']],
+  ja: [['スキャン','書類を数秒で<br>スキャン','自動ふち検出・トリミング・複数ページPDF'],['編集','すべてのページを<br>きれいに','回転・並べ替え・削除・HD書き出し'],['OCR','どんな書類の<br>文字もコピー','日本語対応、端末内で高速＆プライベート'],['整理','どのファイルも<br>すぐに見つかる','名前もPDF内の文字も検索'],['カスタマイズ','あなた好みに','ダークモードと7色のアクセント'],['ダークモード','昼も夜も<br>目にやさしい','メール・LINE・DriveでPDFを共有']],
+  ko: [['스캔','몇 초 만에<br>문서 스캔','가장자리 감지, 자동 자르기, 여러 페이지 PDF'],['편집','모든 페이지를<br>완벽하게','회전, 순서 변경, 삭제, HD 내보내기'],['OCR','어떤 문서든<br>텍스트 복사','한국어 지원, 빠르고 안전한 기기 내 인식'],['정리','어떤 파일이든<br>바로 찾기','PDF 이름과 내용으로 검색'],['맞춤 설정','나만의<br>스타일로','다크 모드와 7가지 강조 색상'],['다크 모드','낮에도 밤에도<br>눈이 편안하게','이메일, 카카오톡, Drive로 PDF 공유']],
+  zh: [['扫描','几秒钟<br>扫描文档','自动边缘检测、裁剪，多页 PDF'],['编辑','每一页<br>都完美','旋转、排序、删除，高清导出'],['OCR','从任何文档<br>复制文字','支持中文，快速、私密的设备端识别'],['整理','任何文件<br>即刻找到','按名称和 PDF 内文字搜索'],['个性化','随心<br>定制','深色模式和 7 种强调色'],['深色模式','日夜使用<br>都护眼','通过邮件、Drive 分享 PDF']],
+};
+
 const root = document.getElementById('root');
 if (s === 'feature') {
   root.innerHTML = `<div class="feature">
@@ -263,10 +280,13 @@ if (s === 'feature') {
   </div>`;
 } else {
   const d = SHOTS[s];
+  const cap = (CAPTIONS[lang] || [])[s - 1];
+  const [kicker, h, p] = cap || [d.kicker[1], d.h, d.p];
+  const latin = !['ar', 'hi', 'ja', 'ko', 'zh'].includes(lang);
   root.innerHTML = `<div class="canvas" style="background:${d.bg}">
     <div class="blob" style="width:700px;height:700px;left:-260px;top:-240px;opacity:.08"></div>
     <div class="blob" style="width:520px;height:520px;right:-200px;top:520px;opacity:.07"></div>
-    <div class="caption"><span class="kicker">${I(d.kicker[0],'font-size:34px')} ${d.kicker[1]}</span><h1>${d.h}</h1><p>${d.p}</p></div>
+    <div class="caption" dir="${lang === 'ar' ? 'rtl' : 'ltr'}"><span class="kicker" style="${latin ? '' : 'letter-spacing:0'}">${I(d.kicker[0],'font-size:34px')} ${kicker}</span><h1 style="${latin ? '' : 'letter-spacing:0;line-height:1.2;font-size:84px'}">${h}</h1><p>${p}</p></div>
     <div class="phone"><div class="screen"><div class="notch"></div><div class="screen-inner">${d.screen()}</div></div></div>
   </div>`;
 }

@@ -74,7 +74,8 @@
       ],
       "expo-font",
       "expo-sharing",
-      "expo-status-bar"
+      "expo-status-bar",
+      ["expo-localization", { "supportsRTL": true, "allowDynamicLocaleChangesAndroid": true, "supportedLocales": ["en", "es", "pt", "fr", "de", "ru", "tr", "ar", "hi", "id", "vi", "ja", "ko", "zh"] }]
     ],
     "extra": {
       "eas": {

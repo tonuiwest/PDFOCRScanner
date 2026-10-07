@@ -9,6 +9,7 @@ import { updateDocument, writeTextFile } from '../services/documents';
 import { leavingApp } from '../services/capture';
 import { adsManager } from '../services/adsManager';
 import type { ScreenProps } from '../navigation';
+import { t } from '../i18n';
 
 export default function TextScreen({ route, navigation }: ScreenProps<'Text'>) {
   const { theme } = useTheme();
@@ -24,7 +25,7 @@ export default function TextScreen({ route, navigation }: ScreenProps<'Text'>) {
 
   const copy = async () => {
     await Clipboard.setStringAsync(text);
-    toast('Copied to clipboard', 'copy');
+    toast(t('copied'), 'copy');
     setTimeout(() => adsManager.maybeShowInterstitial(), 900);
   };
 
@@ -34,7 +35,7 @@ export default function TextScreen({ route, navigation }: ScreenProps<'Text'>) {
       await leavingApp(() => Sharing.shareAsync(uri, { mimeType: 'text/plain', UTI: 'public.plain-text', dialogTitle: title }));
       adsManager.maybeShowInterstitial();
     } catch (e: any) {
-      Alert.alert('Could not share', e?.message);
+      Alert.alert(t('shareFailed'), e?.message);
     }
   };
 
@@ -42,16 +43,16 @@ export default function TextScreen({ route, navigation }: ScreenProps<'Text'>) {
     if (!docId) return;
     await updateDocument(docId, { ocrText: text });
     setOriginal(text);
-    toast('Text saved');
+    toast(t('textSaved'));
   };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: c.background }} edges={['top']}>
       <Header
         title={title}
-        subtitle={`${words} words · ${text.length} characters`}
+        subtitle={t('wordsChars', { w: words, c: text.length })}
         onBack={() => navigation.goBack()}
-        right={docId && dirty ? <IconButton icon="save-outline" onPress={save} accessibilityLabel="Save edits" color={c.primary} /> : undefined}
+        right={docId && dirty ? <IconButton icon="save-outline" onPress={save} accessibilityLabel={t('saveEdits')} color={c.primary} /> : undefined}
       />
       <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <View style={[styles.card, { backgroundColor: c.surface, borderColor: c.border }]}>
@@ -61,14 +62,14 @@ export default function TextScreen({ route, navigation }: ScreenProps<'Text'>) {
             multiline
             textAlignVertical="top"
             style={[styles.input, { color: c.textPrimary }]}
-            placeholder="No text"
+            placeholder={t('noText')}
             placeholderTextColor={c.textMuted}
           />
         </View>
-        <Text style={[styles.hint, { color: c.textMuted }]}>Tap the text to edit before copying or sharing.</Text>
+        <Text style={[styles.hint, { color: c.textMuted }]}>{t('editHint')}</Text>
         <View style={[styles.bar, { paddingBottom: insets.bottom + 12, borderTopColor: c.border, backgroundColor: c.surface }]}>
-          <Button title="Share .txt" icon="share-outline" variant="secondary" onPress={shareTxt} style={{ flex: 1 }} disabled={!text.trim()} />
-          <Button title="Copy" icon="copy-outline" onPress={copy} style={{ flex: 1 }} disabled={!text.trim()} />
+          <Button title={t('shareTxt')} icon="share-outline" variant="secondary" onPress={shareTxt} style={{ flex: 1 }} disabled={!text.trim()} />
+          <Button title={t('copy')} icon="copy-outline" onPress={copy} style={{ flex: 1 }} disabled={!text.trim()} />
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

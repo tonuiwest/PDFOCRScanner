@@ -13,6 +13,7 @@ import { AD_FREE_ADS_REQUIRED, AD_FREE_MINUTES } from '../services/adsManager';
 import { pickImages, scanPages } from '../services/capture';
 import { extractTextFromPages } from '../services/ocrService';
 import type { ScreenProps } from '../navigation';
+import { t } from '../i18n';
 
 type IconName = keyof typeof Ionicons.glyphMap;
 
@@ -38,22 +39,22 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
   const extractText = async () => {
     const pages = await pickImages(true);
     if (!pages.length) return;
-    setBusy('Reading text…');
+    setBusy(t('readingText'));
     try {
-      const text = await extractTextFromPages(pages, (d, t) => t > 1 && setBusy(`Reading text… ${d}/${t}`));
+      const text = await extractTextFromPages(pages, (d, n) => n > 1 && setBusy(t('readingTextProgress', { done: d, total: n })));
       setBusy(null);
-      if (!text) { Alert.alert('No text found', 'Try a sharper, well-lit photo with the text facing the camera.'); return; }
-      navigation.navigate('Text', { text, title: 'Extracted text' });
+      if (!text) { Alert.alert(t('noTextTitle'), t('noTextPhoto')); return; }
+      navigation.navigate('Text', { text, title: t('extractedText') });
     } catch (e: any) {
       setBusy(null);
-      Alert.alert('Could not read text', e?.message);
+      Alert.alert(t('readTextFailed'), e?.message);
     }
   };
 
 
   const recent = (docs ?? []).slice(0, 3);
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? t('goodMorning') : hour < 18 ? t('goodAfternoon') : t('goodEvening');
 
   return (
     <View style={{ flex: 1, backgroundColor: c.background }}>
@@ -61,16 +62,16 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
         <View style={styles.top}>
           <View style={{ flex: 1 }}>
             <Text style={[styles.greeting, { color: c.textMuted }]}>{greeting}</Text>
-            <Text style={[styles.brand, { color: c.textPrimary }]}>PDF OCR Scanner</Text>
+            <Text style={[styles.brand, { color: c.textPrimary }]}>{t('appName')}</Text>
           </View>
-          <IconButton icon="settings-outline" filled onPress={() => navigation.navigate('Settings')} accessibilityLabel="Settings" />
+          <IconButton icon="settings-outline" filled onPress={() => navigation.navigate('Settings')} accessibilityLabel={t('settings')} />
         </View>
 
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Pressable
             onPress={scan}
             accessibilityRole="button"
-            accessibilityLabel="Scan a document"
+            accessibilityLabel={t('scanADocument')}
             style={({ pressed }) => [styles.hero, { backgroundColor: c.primary, transform: [{ scale: pressed ? 0.985 : 1 }] }]}
           >
             <View style={styles.heroDecor1} />
@@ -79,13 +80,13 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
               <View style={{ flex: 1, paddingRight: 12 }}>
                 <View style={styles.heroBadge}>
                   <Ionicons name="camera" size={12} color="#fff" />
-                  <Text style={styles.heroBadgeText}>AUTO EDGE DETECT</Text>
+                  <Text style={styles.heroBadgeText}>{t('autoEdge')}</Text>
                 </View>
-                <Text style={styles.heroTitle}>Scan document</Text>
-                <Text style={styles.heroSub}>Auto crop, multi-page PDF and text recognition</Text>
+                <Text style={styles.heroTitle}>{t('scanDocument')}</Text>
+                <Text style={styles.heroSub}>{t('heroSub')}</Text>
                 <View style={styles.heroCta}>
                   <Ionicons name="camera" size={16} color={c.primary} />
-                  <Text style={[styles.heroCtaText, { color: c.primary }]}>Start scanning</Text>
+                  <Text style={[styles.heroCtaText, { color: c.primary }]}>{t('startScanning')}</Text>
                 </View>
               </View>
               <ScanGraphic accent={c.primary} />
@@ -93,30 +94,30 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
           </Pressable>
 
           <View style={styles.grid}>
-            <QuickAction icon="images" tint="#EC4899" label="Photos to PDF" onPress={importPhotos} />
-            <QuickAction icon="document-text" tint="#10B981" label="Extract text" onPress={extractText} />
-            <QuickAction icon="folder-open" tint="#F59E0B" label="Documents" onPress={() => navigation.navigate('Documents')} />
+            <QuickAction icon="images" tint="#EC4899" label={t('photosToPdf')} onPress={importPhotos} />
+            <QuickAction icon="document-text" tint="#10B981" label={t('extractText')} onPress={extractText} />
+            <QuickAction icon="folder-open" tint="#F59E0B" label={t('documents')} onPress={() => navigation.navigate('Documents')} />
           </View>
 
           {canShowAds && (
             <Pressable onPress={adFreeUnlock.start} style={({ pressed }) => [styles.offer, { backgroundColor: c.warningSoft, opacity: pressed ? 0.8 : 1 }]}>
               <Ionicons name="diamond" size={18} color={c.warning} />
-              <Text style={[styles.offerText, { color: c.textPrimary }]}>{AD_FREE_MINUTES}-minute Premium · no ads</Text>
-              <Text style={[styles.offerCta, { color: c.warning }]}>{adFreeProgress ? `Continue ${adFreeProgress}/${AD_FREE_ADS_REQUIRED}` : `Watch ${AD_FREE_ADS_REQUIRED} ads`}</Text>
+              <Text style={[styles.offerText, { color: c.textPrimary }]}>{t('premiumBanner', { n: AD_FREE_MINUTES })}</Text>
+              <Text style={[styles.offerCta, { color: c.warning }]}>{adFreeProgress ? t('continueProgress', { done: adFreeProgress, total: AD_FREE_ADS_REQUIRED }) : t('watchNAds', { n: AD_FREE_ADS_REQUIRED })}</Text>
             </Pressable>
           )}
           {adFree && (
             <View style={[styles.offer, { backgroundColor: c.successSoft }]}>
               <Ionicons name="checkmark-circle" size={18} color={c.success} />
-              <Text style={[styles.offerText, { color: c.textPrimary }]}>Premium active · {adFreeMinutes} min left</Text>
+              <Text style={[styles.offerText, { color: c.textPrimary }]}>{t('premiumActiveLeft', { n: adFreeMinutes })}</Text>
             </View>
           )}
 
           <View style={styles.sectionHead}>
-            <Text style={[styles.section, { color: c.textPrimary }]}>Recent</Text>
+            <Text style={[styles.section, { color: c.textPrimary }]}>{t('recent')}</Text>
             {(docs?.length ?? 0) > 0 && (
               <Pressable onPress={() => navigation.navigate('Documents')} hitSlop={8}>
-                <Text style={[styles.seeAll, { color: c.primary }]}>See all ({docs!.length})</Text>
+                <Text style={[styles.seeAll, { color: c.primary }]}>{t('seeAll', { n: docs!.length })}</Text>
               </Pressable>
             )}
           </View>
@@ -124,8 +125,8 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
           {docs && recent.length === 0 ? (
             <View style={[styles.emptyCard, { borderColor: c.border }]}>
               <Ionicons name="document-text-outline" size={26} color={c.textMuted} />
-              <Text style={[styles.emptyTitle, { color: c.textPrimary }]}>No documents yet</Text>
-              <Text style={[styles.emptyText, { color: c.textSecondary }]}>Your scans appear here. Tap Scan document to create your first PDF.</Text>
+              <Text style={[styles.emptyTitle, { color: c.textPrimary }]}>{t('noDocsTitle')}</Text>
+              <Text style={[styles.emptyText, { color: c.textSecondary }]}>{t('noDocsHome')}</Text>
             </View>
           ) : (
             <View style={{ gap: 10 }}>
@@ -138,7 +139,7 @@ export default function HomeScreen({ navigation }: ScreenProps<'Home'>) {
         <BannerSlot />
       </SafeAreaView>
       {element}
-      <LoadingOverlay visible={!!busy || adFreeUnlock.busy} label={busy ?? 'Loading ad…'} />
+      <LoadingOverlay visible={!!busy || adFreeUnlock.busy} label={busy ?? t('loadingAd')} />
     </View>
   );
 }

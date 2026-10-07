@@ -23,6 +23,7 @@
     "expo-haptics": "~57.0.3",
     "expo-image-manipulator": "~57.0.21",
     "expo-image-picker": "~57.0.20",
+    "expo-localization": "~57.0.2",
     "expo-print": "~57.0.2",
     "expo-sharing": "~57.0.22",
     "expo-status-bar": "~57.0.1",

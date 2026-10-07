@@ -2,6 +2,7 @@ import { useCallback, useEffect, useReducer, useState } from 'react';
 import { Alert } from 'react-native';
 import { adsManager, AD_FREE_ADS_REQUIRED, AD_FREE_MINUTES } from '../services/adsManager';
 import { useToast } from '../components/ui';
+import { t } from '../i18n';
 
 /** Re-renders when ad availability changes (SDK ready, consent, ad-free progress/reward). */
 export function useAds() {
@@ -25,26 +26,26 @@ export function useAdFreeUnlock() {
     const r = await adsManager.watchForAdFree();
     setBusy(false);
     if (r === 'rewarded') {
-      toast(`Premium unlocked for ${AD_FREE_MINUTES} minutes`, 'diamond');
+      toast(t('premiumUnlocked', { min: AD_FREE_MINUTES }), 'diamond');
     } else if (r === 'progress') {
-      const left = AD_FREE_ADS_REQUIRED - adsManager.adFreeProgress;
+      const done = adsManager.adFreeProgress;
       Alert.alert(
-        `${adsManager.adFreeProgress} of ${AD_FREE_ADS_REQUIRED} done`,
-        `Watch ${left} more ${left === 1 ? 'ad' : 'ads'} to unlock ${AD_FREE_MINUTES} minutes of Premium. Your progress is saved.`,
-        [{ text: 'Later', style: 'cancel' }, { text: 'Watch next', onPress: () => { watchNext(); } }],
+        t('premiumStepTitle', { done, total: AD_FREE_ADS_REQUIRED }),
+        t('premiumStepBody', { left: AD_FREE_ADS_REQUIRED - done, min: AD_FREE_MINUTES }),
+        [{ text: t('later'), style: 'cancel' }, { text: t('watchNext'), onPress: () => { watchNext(); } }],
       );
     } else if (r === 'unavailable') {
-      Alert.alert('No ad available', 'Please try again in a little while. Your progress is saved.');
+      Alert.alert(t('noAdTitle'), t('noAdBodySaved'));
     }
   }, [toast]);
 
   const start = useCallback(() => {
     const done = adsManager.adFreeProgress;
     Alert.alert(
-      `Get ${AD_FREE_MINUTES} minutes of Premium`,
-      `Watch ${AD_FREE_ADS_REQUIRED} short video ads to unlock ${AD_FREE_MINUTES} minutes of Premium — no ads, uninterrupted scanning.` +
-        (done ? `\n\nProgress: ${done} of ${AD_FREE_ADS_REQUIRED} watched.` : ''),
-      [{ text: 'Not now', style: 'cancel' }, { text: done ? 'Continue' : 'Watch ad', onPress: () => { watchNext(); } }],
+      t('premiumTitle', { min: AD_FREE_MINUTES }),
+      t('premiumBody', { n: AD_FREE_ADS_REQUIRED, min: AD_FREE_MINUTES }) +
+        (done ? `\n\n${t('premiumProgressLine', { done, total: AD_FREE_ADS_REQUIRED })}` : ''),
+      [{ text: t('notNow'), style: 'cancel' }, { text: done ? t('continue') : t('watchAd'), onPress: () => { watchNext(); } }],
     );
   }, [watchNext]);
 
