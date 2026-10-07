@@ -1,0 +1,275 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=block" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,500,1,0&display=block" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Inter, sans-serif; overflow: hidden; }
+  .ms { font-family: 'Material Symbols Rounded'; font-weight: normal; font-style: normal; line-height: 1; display: inline-block; font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; }
+
+  /* ---------- canvas ---------- */
+  .canvas { width: 1080px; height: 1920px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; }
+  .blob { position: absolute; border-radius: 50%; filter: blur(2px); opacity: .18; background: #fff; }
+  .caption { position: relative; z-index: 2; text-align: center; color: #fff; padding: 120px 70px 0; }
+  .caption .kicker { display: inline-flex; align-items: center; gap: 10px; font-size: 30px; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; background: rgba(255,255,255,.18); padding: 12px 26px; border-radius: 40px; }
+  .caption h1 { font-size: 92px; line-height: 1.04; font-weight: 900; letter-spacing: -2.5px; margin-top: 34px; }
+  .caption p { font-size: 38px; line-height: 1.35; font-weight: 500; opacity: .9; margin-top: 26px; }
+  .phone { position: absolute; left: 50%; bottom: -60px; transform: translateX(-50%); width: 820px; height: 1260px; border-radius: 96px; background: #0c0f17; padding: 22px; box-shadow: 0 60px 120px rgba(0,0,0,.45), inset 0 0 0 3px #2a3040; z-index: 2; }
+  .screen { width: 100%; height: 100%; border-radius: 76px; overflow: hidden; position: relative; }
+  .screen-inner { width: 388px; height: 640px; zoom: 2; position: relative; display: flex; flex-direction: column; }
+  .notch { position: absolute; top: 9px; left: 50%; transform: translateX(-50%); width: 90px; height: 24px; border-radius: 14px; background: #0c0f17; z-index: 9; }
+  .status { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 6px 26px 0; font-size: 13px; font-weight: 700; }
+
+  /* ---------- app theme ---------- */
+  .app { --bg:#F5F6FA; --s:#fff; --s2:#EEF0F6; --p:#3D5AFE; --ps:#E8ECFF; --t:#121826; --t2:#4B5468; --m:#8A93A6; --b:#E3E6EE; background: var(--bg); color: var(--t); flex: 1; display: flex; flex-direction: column; }
+  .app.dark { --bg:#0B0E16; --s:#151A26; --s2:#1D2332; --t:#F1F3F9; --t2:#B3BACB; --m:#737C91; --b:#262D3D; }
+  .app .status { color: var(--t); }
+  .hdr { display: flex; align-items: center; padding: 6px 16px 10px; gap: 6px; }
+  .hdr .back { width: 32px; font-size: 26px; }
+  .hdr h2 { font-size: 20px; font-weight: 800; letter-spacing: -.4px; }
+  .hdr small { display: block; font-size: 11.5px; color: var(--m); font-weight: 500; margin-top: 1px; }
+  .iconbtn { width: 36px; height: 36px; border-radius: 18px; background: var(--s); border: 1px solid var(--b); display: grid; place-items: center; font-size: 20px; color: var(--t); }
+  .body { padding: 0 16px; flex: 1; overflow: hidden; }
+  .banner { height: 50px; background: var(--s); border-top: 1px solid var(--b); display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; color: var(--m); }
+  .banner b { background: #FFF3DF; color: #C77700; padding: 1px 5px; border-radius: 3px; font-size: 9px; }
+
+  .hero { background: var(--p); border-radius: 22px; padding: 18px; color: #fff; position: relative; overflow: hidden; display: flex; align-items: center; }
+  .hero .d1 { position: absolute; width: 180px; height: 180px; border-radius: 50%; right: -60px; top: -80px; background: rgba(255,255,255,.1); }
+  .hero .d2 { position: absolute; width: 120px; height: 120px; border-radius: 50%; right: 30px; bottom: -80px; background: rgba(255,255,255,.07); }
+  .badge { display: inline-flex; gap: 4px; align-items: center; background: rgba(255,255,255,.18); border-radius: 7px; padding: 3px 7px; font-size: 8.5px; font-weight: 800; letter-spacing: .8px; }
+  .hero h3 { font-size: 20px; font-weight: 800; margin-top: 10px; letter-spacing: -.3px; }
+  .hero p { font-size: 12px; opacity: .85; margin-top: 3px; line-height: 1.35; }
+  .cta { display: inline-flex; gap: 5px; align-items: center; background: #fff; color: var(--p); font-weight: 800; font-size: 12.5px; padding: 8px 12px; border-radius: 11px; margin-top: 14px; }
+
+  .sg { width: 92px; height: 112px; position: relative; flex-shrink: 0; display: grid; place-items: center; }
+  .sg .c { position: absolute; width: 18px; height: 18px; border: 0 solid #fff; }
+  .sg .pg { width: 60px; height: 80px; background: #fff; border-radius: 5px; transform: rotate(-4deg); padding: 9px 7px; position: relative; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,.25); }
+  .sg .pgb { position: absolute; width: 60px; height: 80px; background: rgba(255,255,255,.45); border-radius: 5px; transform: rotate(6deg) translateX(6px); }
+  .sg .ln { height: 3px; background: #C9D0DD; border-radius: 2px; margin-bottom: 4px; }
+  .sg .beam { position: absolute; left: -4px; right: -4px; top: 46px; height: 2px; background: #22D3EE; box-shadow: 0 0 8px 4px rgba(34,211,238,.55); }
+
+  .grid { display: flex; gap: 9px; margin-top: 12px; }
+  .qa { flex: 1; background: var(--s); border: 1px solid var(--b); border-radius: 16px; padding: 14px 6px; text-align: center; }
+  .qa .ic { width: 42px; height: 42px; border-radius: 14px; display: grid; place-items: center; color: #fff; font-size: 22px; margin: 0 auto 8px; }
+  .qa span.l { font-size: 11px; font-weight: 700; }
+  .offer { display: flex; align-items: center; gap: 8px; border-radius: 13px; padding: 10px 12px; margin-top: 12px; font-size: 12px; font-weight: 600; background: #FFF3DF; }
+  .offer .ms { color: #C77700; font-size: 17px; }
+  .offer b { margin-left: auto; color: #C77700; font-weight: 800; }
+  .sec { display: flex; justify-content: space-between; align-items: center; margin: 18px 0 10px; }
+  .sec h4 { font-size: 16px; font-weight: 800; }
+  .sec a { font-size: 12.5px; color: var(--p); font-weight: 700; }
+
+  .row { display: flex; align-items: center; gap: 12px; background: var(--s); border: 1px solid var(--b); border-radius: 15px; padding: 10px; margin-bottom: 9px; }
+  .thumb { width: 42px; height: 54px; border-radius: 7px; position: relative; overflow: hidden; border: 1px solid var(--b); background: #fff; padding: 6px 5px; flex-shrink: 0; }
+  .thumb .ln { height: 2.5px; background: #CBD2DE; border-radius: 2px; margin-bottom: 3px; }
+  .pdf { position: absolute; left: 0; bottom: 0; background: #E53935; color: #fff; font-size: 7.5px; font-weight: 900; letter-spacing: .4px; padding: 2px 4px; border-top-right-radius: 5px; }
+  .row .n { font-size: 13.5px; font-weight: 700; }
+  .row .mt { font-size: 11px; color: var(--m); margin-top: 3px; }
+  .tag { display: inline-flex; gap: 3px; align-items: center; background: #E3F5EC; color: #14935C; font-size: 9.5px; font-weight: 700; padding: 1px 5px; border-radius: 5px; margin-top: 5px; }
+  .more { margin-left: auto; color: var(--m); font-size: 18px; }
+
+  .search { display: flex; gap: 8px; margin-bottom: 11px; }
+  .search .in { flex: 1; height: 40px; border-radius: 12px; background: var(--s); border: 1px solid var(--b); display: flex; align-items: center; gap: 7px; padding: 0 10px; font-size: 13px; color: var(--t); }
+  .search .so { height: 40px; border-radius: 12px; background: var(--s); border: 1px solid var(--b); display: flex; align-items: center; gap: 4px; padding: 0 10px; font-size: 11.5px; font-weight: 700; color: var(--t2); }
+  .native { display: flex; gap: 10px; align-items: center; background: var(--s); border: 1px solid var(--b); border-radius: 15px; padding: 10px; margin-bottom: 9px; }
+  .native .ai { width: 38px; height: 38px; border-radius: 9px; background: linear-gradient(135deg,#22c55e,#0ea5e9); }
+
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .tile { background: var(--s); border: 1px solid var(--b); border-radius: 15px; padding: 7px 7px 4px; }
+  .tile .img { aspect-ratio: .72; border-radius: 9px; background: var(--s2); position: relative; padding: 10px; overflow: hidden; }
+  .tile .paper { background: #fff; height: 100%; border-radius: 3px; padding: 10px 8px; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .tile .paper .ln { height: 3px; background: #CBD2DE; border-radius: 2px; margin-bottom: 5px; }
+  .tile .no { position: absolute; left: 5px; top: 5px; width: 19px; height: 19px; border-radius: 10px; background: rgba(10,14,25,.6); color: #fff; font-size: 10.5px; font-weight: 800; display: grid; place-items: center; }
+  .tools { display: flex; justify-content: space-around; padding: 6px 0 3px; font-size: 17px; color: var(--t2); }
+  .opts { background: var(--s); border: 1px solid var(--b); border-radius: 15px; padding: 0 12px; margin-top: 12px; }
+  .opt { display: flex; align-items: center; justify-content: space-between; height: 46px; font-size: 13px; font-weight: 600; border-bottom: 1px solid var(--b); }
+  .opt:last-child { border: 0; }
+  .seg { display: flex; background: var(--s2); border-radius: 9px; padding: 3px; }
+  .seg span { padding: 5px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 700; color: var(--m); }
+  .seg span.on { background: var(--s); color: var(--t); box-shadow: 0 1px 3px rgba(0,0,0,.1); }
+  .sw { width: 40px; height: 24px; border-radius: 12px; background: var(--p); position: relative; }
+  .sw::after { content: ''; position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 9px; background: #fff; }
+  .bar { display: flex; gap: 9px; padding: 11px 16px 18px; background: var(--s); border-top: 1px solid var(--b); }
+  .btn { flex: 1; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13.5px; font-weight: 700; }
+  .btn.p { background: var(--p); color: #fff; flex: 1.4; }
+  .btn.s { background: var(--s2); color: var(--t); }
+
+  .txt { background: var(--s); border: 1px solid var(--b); border-radius: 15px; padding: 14px; font-size: 12.5px; line-height: 1.6; color: var(--t); height: 100%; }
+  .txt mark { background: var(--ps); color: var(--p); border-radius: 3px; padding: 0 2px; }
+  .toast { position: absolute; top: 46px; left: 50%; transform: translateX(-50%); background: #121826; color: #fff; font-size: 12px; font-weight: 600; padding: 10px 14px; border-radius: 12px; display: flex; gap: 6px; align-items: center; white-space: nowrap; box-shadow: 0 6px 16px rgba(0,0,0,.25); z-index: 5; }
+
+  .stitle { font-size: 10.5px; font-weight: 700; letter-spacing: .8px; color: var(--m); margin: 14px 0 6px 4px; }
+  .card { background: var(--s); border: 1px solid var(--b); border-radius: 15px; overflow: hidden; }
+  .srow { display: flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 12px; font-size: 13px; font-weight: 600; }
+  .srow .ti { width: 27px; height: 27px; border-radius: 8px; display: grid; place-items: center; color: #fff; font-size: 16px; }
+  .srow .v { margin-left: auto; font-size: 12px; color: var(--m); font-weight: 500; }
+  .sws { display: flex; justify-content: space-between; padding: 0 12px 12px; }
+  .sws i { width: 36px; height: 36px; border-radius: 50%; border: 2px solid transparent; display: grid; place-items: center; }
+  .sws i b { width: 28px; height: 28px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 16px; }
+
+  /* ---------- feature graphic / icon ---------- */
+  .feature { width: 1024px; height: 500px; position: relative; overflow: hidden; background: linear-gradient(120deg,#2B3FD6 0%,#3D5AFE 45%,#6A4CFF 100%); color: #fff; display: flex; align-items: center; padding: 0 60px; }
+  .feature h1 { font-size: 64px; font-weight: 900; letter-spacing: -1.8px; line-height: 1.02; }
+  .feature p { font-size: 24px; font-weight: 500; opacity: .9; margin-top: 16px; line-height: 1.35; }
+  .chips { display: flex; gap: 10px; margin-top: 26px; }
+  .chips span { background: rgba(255,255,255,.18); border-radius: 30px; padding: 9px 16px; font-size: 17px; font-weight: 700; display: inline-flex; gap: 6px; align-items: center; }
+  .icon { width: 512px; height: 512px; background: linear-gradient(140deg,#4A66FF,#2E44E0 60%,#5B3DF5); display: grid; place-items: center; position: relative; overflow: hidden; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script>
+const s = new URLSearchParams(location.search).get('s') || '1';
+const I = (n, st='') => `<span class="ms" style="${st}">${n}</span>`;
+const lines = (ws, cls='ln') => ws.map(w => `<div class="${cls}" style="width:${w}%"></div>`).join('');
+const scanGraphic = (scale=1) => `
+  <div class="sg" style="zoom:${scale}">
+    <div class="c" style="top:0;left:0;border-top-width:3px;border-left-width:3px;border-top-left-radius:10px"></div>
+    <div class="c" style="top:0;right:0;border-top-width:3px;border-right-width:3px;border-top-right-radius:10px"></div>
+    <div class="c" style="bottom:0;left:0;border-bottom-width:3px;border-left-width:3px;border-bottom-left-radius:10px"></div>
+    <div class="c" style="bottom:0;right:0;border-bottom-width:3px;border-right-width:3px;border-bottom-right-radius:10px"></div>
+    <div class="pgb"></div>
+    <div class="pg">
+      <div class="ln" style="width:55%;height:5px;background:#3D5AFE;opacity:.85;margin-bottom:6px"></div>
+      ${lines([95,82,90,70,88,60,92,75])}
+      <div class="beam"></div>
+    </div>
+  </div>`;
+const status = `<div class="status"><span>9:41</span><span>${I('signal_cellular_alt','font-size:15px')} ${I('wifi','font-size:15px')} ${I('battery_full','font-size:15px')}</span></div>`;
+const banner = `<div class="banner"><b>Ad</b> Banner</div>`;
+const thumb = (ws) => `<div class="thumb">${lines(ws)}<div class="pdf">PDF</div></div>`;
+const docRow = (name, meta, text) => `
+  <div class="row">${thumb([80,95,70,90,60,85])}
+    <div><div class="n">${name}</div><div class="mt">${meta}</div>${text ? `<div class="tag">${I('notes','font-size:11px')} Text</div>` : ''}</div>
+    ${I('more_vert','font-size:18px;margin-left:auto;color:var(--m)')}
+  </div>`;
+
+function home(dark=false, accent) {
+  return `<div class="app ${dark?'dark':''}" style="${accent?`--p:${accent}`:''}">${status}
+    <div class="hdr" style="padding-top:2px"><div style="flex:1"><small style="font-size:12px;font-weight:600">Good morning</small><h2 style="font-size:22px">PDF OCR Scanner</h2></div><div class="iconbtn">${I('settings','font-size:19px')}</div></div>
+    <div class="body">
+      <div class="hero"><div class="d1"></div><div class="d2"></div>
+        <div style="flex:1;position:relative"><span class="badge">${I('photo_camera','font-size:11px')} AUTO EDGE DETECT</span>
+          <h3>Scan document</h3><p>Auto crop, multi-page PDF and text recognition</p>
+          <span class="cta">${I('photo_camera','font-size:15px')} Start scanning</span></div>
+        ${scanGraphic()}
+      </div>
+      <div class="grid">
+        <div class="qa"><div class="ic" style="background:#EC4899">${I('photo_library')}</div><span class="l">Photos to PDF</span></div>
+        <div class="qa"><div class="ic" style="background:#10B981">${I('description')}</div><span class="l">Extract text</span></div>
+        <div class="qa"><div class="ic" style="background:#F59E0B">${I('folder_open')}</div><span class="l">Documents</span></div>
+      </div>
+      <div class="offer" style="${dark?'background:#2E2311;color:#F1F3F9':''}">${I('diamond')} 5-minute Premium · no ads <b>Watch 3 ads</b></div>
+      <div class="sec"><h4>Recent</h4><a>See all (12)</a></div>
+      ${docRow('Lease Agreement','Just now · 4 pages · 1.2 MB',true)}
+      ${docRow('Invoice #2041','2 h ago · 1 page · 310 KB',true)}
+      ${docRow('Class Notes – Biology','Yesterday · 6 pages · 2.4 MB',false)}
+    </div>${banner}</div>`;
+}
+
+function editor() {
+  const tile = (n, ws) => `<div class="tile"><div class="img"><div class="paper">
+      <div class="ln" style="width:50%;height:5px;background:#3D5AFE;opacity:.8;margin-bottom:8px"></div>${lines(ws)}</div><div class="no">${n}</div></div>
+      <div class="tools">${I('chevron_left')}${I('rotate_right')}${I('delete','color:#D93B3B')}${I('chevron_right')}</div></div>`;
+  return `<div class="app">${status}
+    <div class="hdr"><span class="ms back">chevron_left</span><div style="flex:1"><h2>Lease Agreement</h2><small>4 pages</small></div>${I('edit','font-size:21px')}</div>
+    <div class="body">
+      <div class="tiles">${tile(1,[90,80,95,70,85,92,60,88,75])}${tile(2,[85,95,72,90,66,94,80,70])}</div>
+      <div class="opts">
+        <div class="opt">Page size <div class="seg"><span class="on">A4</span><span>Letter</span></div></div>
+        <div class="opt">Quality <div class="seg"><span>Standard</span><span class="on">HD</span></div></div>
+        <div class="opt"><div>Save extracted text<div style="font-size:10.5px;color:var(--m);font-weight:500;margin-top:2px">Copy text from your PDFs later</div></div><div class="sw"></div></div>
+      </div>
+    </div>
+    <div class="bar"><div class="btn s">${I('description','font-size:17px')} Extract text</div><div class="btn p">${I('check','font-size:18px')} Save PDF</div></div></div>`;
+}
+
+function documents() {
+  return `<div class="app">${status}
+    <div class="hdr"><span class="ms back">chevron_left</span><div style="flex:1"><h2>Documents</h2><small>12 files</small></div>${I('document_scanner','font-size:22px')}</div>
+    <div class="body">
+      <div class="search"><div class="in">${I('search','font-size:18px;color:var(--m)')} invoice</div><div class="so">${I('swap_vert','font-size:16px')} Newest</div></div>
+      ${docRow('Invoice #2041','2 h ago · 1 page · 310 KB',true)}
+      ${docRow('Invoice #2037','3 days ago · 2 pages · 540 KB',true)}
+      ${docRow('Supplier Invoice – March','Mar 14, 2026 · 1 page · 280 KB',true)}
+      <div class="native"><div class="ai"></div><div style="flex:1"><div style="font-size:12.5px;font-weight:700"><span style="background:#FFF3DF;color:#C77700;font-size:9px;padding:1px 4px;border-radius:3px;margin-right:4px">Ad</span>Sponsored app</div><div style="font-size:10.5px;color:var(--m);margin-top:2px">Native ad placement</div></div><span style="background:var(--ps);color:var(--p);font-size:11px;font-weight:700;padding:7px 10px;border-radius:9px">Install</span></div>
+      ${docRow('Invoice Template','Feb 2, 2026 · 1 page · 190 KB',false)}
+    </div>${banner}</div>`;
+}
+
+function text() {
+  return `<div class="app">${status}
+    <div class="toast">${I('content_copy','font-size:15px')} Copied to clipboard</div>
+    <div class="hdr"><span class="ms back">chevron_left</span><div style="flex:1"><h2>Invoice #2041</h2><small>142 words · 918 characters</small></div></div>
+    <div class="body" style="padding-bottom:10px"><div class="txt">
+      <b style="font-size:14px">ACME SUPPLIES LTD.</b><br>42 Market Street, Springfield<br><br>
+      <b>INVOICE</b> No. <mark>2041</mark><br>Date: 07 Oct 2026<br>Due: 21 Oct 2026<br><br>
+      Bill to: Northwind Studio<br><br>
+      1 × Office chair ........ $189.00<br>2 × Desk lamp ........... $58.00<br>5 × Notebook A5 ......... $22.50<br>
+      ──────────────────<br><b>Subtotal</b> ............... $269.50<br>Tax (8%) ................ $21.56<br><b>Total due</b> .............. <mark>$291.06</mark><br><br>
+      Thank you for your business!
+    </div></div>
+    <div class="bar"><div class="btn s">${I('ios_share','font-size:17px')} Share .txt</div><div class="btn p" style="flex:1">${I('content_copy','font-size:17px')} Copy</div></div></div>`;
+}
+
+function settings() {
+  const sw = [['#3D5AFE',1],['#7C3AED'],['#0D9488'],['#16A34A'],['#EA580C'],['#E11D48'],['#334155']];
+  const r = (ic, c, l, v='') => `<div class="srow"><span class="ti" style="background:${c}">${I(ic,'font-size:16px')}</span>${l}<span class="v">${v}</span></div>`;
+  return `<div class="app dark" style="--p:#A47BFF;--ps:#2A1F45">${status}
+    <div class="hdr"><span class="ms back">chevron_left</span><h2>Settings</h2></div>
+    <div class="body">
+      <div class="stitle">APPEARANCE</div>
+      <div class="card">
+        <div class="srow"><span class="ti" style="background:#334155">${I('contrast','font-size:16px')}</span>Theme<div class="seg" style="margin-left:auto"><span>Light</span><span class="on">Dark</span><span>Auto</span></div></div>
+        ${r('palette','#A855F7','Accent colour','Violet')}
+        <div class="sws">${sw.map(([c],i)=>`<i style="border-color:${i===1?c:'transparent'}"><b style="background:${c}">${i===1?I('check','font-size:16px'):''}</b></i>`).join('')}</div>
+      </div>
+      <div class="stitle">SCANNING</div>
+      <div class="card">${r('description','#3B82F6','Default page size','A4')}${r('memory','#10B981','Text recognition','On-device · private')}</div>
+      <div class="stitle">PREMIUM</div>
+      <div class="card">${r('diamond','#F59E0B','5-minute Premium','<b style="color:var(--p)">Watch 3 ads</b>')}</div>
+      <div class="stitle">ABOUT</div>
+      <div class="card">${r('star','#EAB308','Rate the app')}${r('share','#EC4899','Share with friends')}</div>
+    </div></div>`;
+}
+
+const SHOTS = {
+  1: { bg: 'linear-gradient(160deg,#3D5AFE,#2B3FD6 60%,#1E2BA8)', kicker: ['document_scanner','Scan'], h: 'Scan documents<br>in seconds', p: 'Automatic edge detection, crop & multi-page PDF', screen: () => home() },
+  2: { bg: 'linear-gradient(160deg,#EC4899,#BE185D)', kicker: ['edit_document','Edit'], h: 'Perfect every<br>page', p: 'Rotate, reorder, delete & export in HD', screen: editor },
+  3: { bg: 'linear-gradient(160deg,#10B981,#047857)', kicker: ['description','OCR'], h: 'Copy text from<br>any document', p: 'Fast, private on-device text recognition', screen: text },
+  4: { bg: 'linear-gradient(160deg,#F59E0B,#D9480F)', kicker: ['folder_open','Organize'], h: 'Find any file<br>instantly', p: 'Search names and text inside your PDFs', screen: documents },
+  5: { bg: 'linear-gradient(160deg,#7C3AED,#4C1D95)', kicker: ['palette','Personalize'], h: 'Make it<br>yours', p: 'Dark mode and 7 beautiful accent colours', screen: settings },
+  6: { bg: 'linear-gradient(160deg,#1F2937,#0B0E16)', kicker: ['dark_mode','Dark mode'], h: 'Easy on the eyes,<br>day or night', p: 'Share PDFs to email, WhatsApp, Drive & more', screen: () => home(true, '#7088FF') },
+};
+
+const root = document.getElementById('root');
+if (s === 'feature') {
+  root.innerHTML = `<div class="feature">
+    <div class="blob" style="width:420px;height:420px;right:-120px;top:-160px;opacity:.12"></div>
+    <div class="blob" style="width:260px;height:260px;right:230px;bottom:-170px;opacity:.08"></div>
+    <div style="flex:1;position:relative;z-index:2">
+      <h1>PDF OCR<br>Scanner</h1>
+      <p>Scan documents, create PDFs<br>and copy text in seconds.</p>
+      <div class="chips"><span>${I('document_scanner','font-size:20px')} Auto scan</span><span>${I('description','font-size:20px')} OCR</span><span>${I('picture_as_pdf','font-size:20px')} PDF</span></div>
+    </div>
+    <div style="position:relative;z-index:2;margin-right:20px">${scanGraphic(3.2)}</div>
+  </div>`;
+} else if (s === 'icon') {
+  root.innerHTML = `<div class="icon">
+    <div class="blob" style="width:380px;height:380px;right:-140px;top:-160px;opacity:.12"></div>
+    ${scanGraphic(3.6)}
+  </div>`;
+} else {
+  const d = SHOTS[s];
+  root.innerHTML = `<div class="canvas" style="background:${d.bg}">
+    <div class="blob" style="width:700px;height:700px;left:-260px;top:-240px;opacity:.08"></div>
+    <div class="blob" style="width:520px;height:520px;right:-200px;top:520px;opacity:.07"></div>
+    <div class="caption"><span class="kicker">${I(d.kicker[0],'font-size:34px')} ${d.kicker[1]}</span><h1>${d.h}</h1><p>${d.p}</p></div>
+    <div class="phone"><div class="screen"><div class="notch"></div><div class="screen-inner">${d.screen()}</div></div></div>
+  </div>`;
+}
+</script>
+</body>
+</html>
