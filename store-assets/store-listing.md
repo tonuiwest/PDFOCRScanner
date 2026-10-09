@@ -2,21 +2,21 @@
 
 ## App name (max 30 characters)
 
-**PDF Scanner: OCR Doc Scan** (26)
+**PDF Scanner: OCR Doc Scan** (25)
 
 Alternatives to A/B test (Play Console → Store listing experiments):
-- `PDF Scanner - Scan to PDF, OCR` (30)
+- `PDF Scanner: Scan to PDF, OCR` (29)
 - `Doc Scanner: PDF & Text OCR` (27)
 
 > Google's metadata policy bans "free", "best", "#1", "top", emoji and ALL CAPS in the title. Using them gets the listing rejected or ranked down.
 
 ## Short description (max 80 characters)
 
-**Scan documents to PDF, extract text with OCR and share files in seconds.** (73)
+**Scan documents to PDF, extract text with OCR and share files in seconds.** (72)
 
 Alternatives:
-- `Turn paper into clean PDFs. Auto-crop scanner + text recognition (OCR).` (72)
-- `Fast document scanner: auto-crop, multi-page PDF, copy text from photos.` (73)
+- `Turn paper into clean PDFs. Auto-crop scanner + text recognition (OCR).` (71)
+- `Fast document scanner: auto-crop, multi-page PDF, copy text from photos.` (72)
 
 ## Full description (max 4000 characters)
 
@@ -90,7 +90,7 @@ Download PDF Scanner: OCR Doc Scan and go paperless today.
 
 ## Graphics (already made in `store-assets/`)
 
-- Icon: `icon-512.png`
+- Icon: `icon-512.png` (shared across all localized listings)
 - Feature graphic: `feature-graphic.png`
 - Phone screenshots: `screenshot-1.png` … `screenshot-6.png`, uploaded in that order. The first 3 screenshots are what most users see, and they show the main features.
 
